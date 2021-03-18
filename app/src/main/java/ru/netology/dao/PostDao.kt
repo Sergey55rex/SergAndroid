@@ -1,14 +1,57 @@
 package ru.netology.dao
 
+import androidx.lifecycle.LiveData
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 import ru.netology.dto.Post
+import ru.netology.entity.PostEntity
 import java.io.Closeable
 
+@Dao
 interface PostDao {
-    fun getAll(): List<Post>
-    fun save(post: Post):Post
+    @Query("SELECT * FROM PostEntity ORDER BY id DESC")
+    fun getAll(): LiveData<List<PostEntity>>
+
+    @Insert
+    fun insert(post: PostEntity)
+
+    @Query("UPDATE PostEntity SET content = :content WHERE id = :id")
+    fun updateContentById(id: Long, content: String)
+
+    fun save(post: PostEntity) =
+        if (post.id == 0L) insert(post) else updateContentById(post.id, post.content)
+
+    @Query("""
+        UPDATE PostEntity SET
+        likes = likes + CASE WHEN liked THEN -1 ELSE 1 END,
+        liked = CASE WHEN liked THEN 0 ELSE 1 END
+        WHERE id = :id
+        """)
     fun likeById(id: Long)
+
+    @Query("""
+        UPDATE PostEntity SET
+              toSends = toSends + CASE WHEN toSend THEN -1 ELSE 1 END,
+               toSend = CASE WHEN toSend  THEN 0 ELSE 1 END
+        WHERE id = :id
+        """)
     fun toSendsById(id: Long)
+
+
+    @Query("""
+        UPDATE PostEntity SET
+               viewings = viewings + CASE WHEN viewing THEN -1 ELSE 1 END,
+               viewing = CASE WHEN viewing  THEN 0 ELSE 1 END
+        WHERE id = :id
+        """)
     fun viewingById(id: Long)
+
+
+    
+
+    @Query("DELETE FROM PostEntity WHERE id = :id")
     fun removeById(id: Long)
 
 }
+
