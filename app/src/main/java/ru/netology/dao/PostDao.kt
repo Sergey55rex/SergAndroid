@@ -32,7 +32,7 @@ interface PostDao {
 
     @Query("""
         UPDATE PostEntity SET
-              toSends = toSends + CASE WHEN toSend THEN -1 ELSE 1 END,
+              toSends = toSends + CASE WHEN toSend THEN 1 ELSE 1 END,
                toSend = CASE WHEN toSend  THEN 0 ELSE 1 END
         WHERE id = :id
         """)
@@ -41,7 +41,7 @@ interface PostDao {
 
     @Query("""
         UPDATE PostEntity SET
-               viewings = viewings + CASE WHEN viewing THEN -1 ELSE 1 END,
+               viewings = viewings + CASE WHEN viewing THEN 1 ELSE 1 END,
                viewing = CASE WHEN viewing  THEN 0 ELSE 1 END
         WHERE id = :id
         """)
